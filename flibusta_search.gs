@@ -36,22 +36,25 @@ function searchBooks(chatId, query) {
   if (bookData.length === 0) {
     sendMessage(chatId, "No books found for: " + query);
   } else {
-    // Send only the first result to avoid flooding
-    var book = bookData[0];
-    var message = `*${sanitizeText(book.title)}* (${book.format})`;
-    if (book.author) {
-      message += `\n*Author:* ${sanitizeText(book.author)}`;
+    // Send the first 5 results to avoid flooding
+    var resultsCount = Math.min(bookData.length, 5); // Set the max number of results to 5
+    for (var i = 0; i < resultsCount; i++) {
+      var book = bookData[i];
+      var message = `*${sanitizeText(book.title)}* (${book.format})`;
+      if (book.author) {
+        message += `\n*Author:* ${sanitizeText(book.author)}`;
+      }
+      if (book.genre !== "Unknown genre") {
+        message += `\n*Genre:* ${sanitizeText(book.genre)}`;
+      }
+      if (book.year !== "Unknown year") {
+        message += `\n*Year:* ${book.year}`;
+      }
+      if (book.description) {
+        message += `\n\n${sanitizeText(book.description)}`;
+      }
+      sendBookWithLink(chatId, message, book.downloadLink);
     }
-    if (book.genre !== "Unknown genre") {
-      message += `\n*Genre:* ${sanitizeText(book.genre)}`;
-    }
-    if (book.year !== "Unknown year") {
-      message += `\n*Year:* ${book.year}`;
-    }
-    if (book.description) {
-      message += `\n\n${sanitizeText(book.description)}`;
-    }
-    sendBookWithLink(chatId, message, book.downloadLink);
   }
 }
 
